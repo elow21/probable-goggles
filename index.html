@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CYBERSEC_FEED // THREAT INTEL</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --green:      #00ff41;
+      --green-dim:  #00aa2b;
+      --green-dark: #003d12;
+      --cyan:       #00e5ff;
+      --bg:         #080808;
+      --bg-card:    #0c130c;
+      --border:     #1a3a1a;
+      --text-dim:   #4a8a4a;
+      --text-muted: #2a4a2a;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--green);
+      font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Scanline overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 3px,
+        rgba(0, 0, 0, 0.07) 3px,
+        rgba(0, 0, 0, 0.07) 4px
+      );
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 3rem;
+    }
+
+    /* ── HEADER ── */
+    header {
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      font-size: 2.2rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--green);
+      text-shadow:
+        0 0 8px  rgba(0, 255, 65, 0.8),
+        0 0 20px rgba(0, 255, 65, 0.3);
+      margin-bottom: 0.5rem;
+      line-height: 1;
+    }
+
+    .cursor {
+      display: inline-block;
+      color: var(--green);
+    }
+    .blink { animation: blink 1s step-end infinite; }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0; }
+    }
+
+    .tagline {
+      color: var(--cyan);
+      font-size: 0.88rem;
+      margin-bottom: 0.9rem;
+    }
+
+    .header-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.76rem;
+      color: var(--text-dim);
+    }
+    .header-meta strong { color: var(--green); }
+    .sep  { color: var(--text-muted); }
+    .online { color: var(--green); }
+
+    /* ── SECTION LABEL ── */
+    .section-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 1.2rem;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    /* ── ARTICLE CARDS ── */
+    .card {
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--green-dim);
+      padding: 1rem 1.25rem;
+      margin-bottom: 0.9rem;
+      background: var(--bg-card);
+      transition: border-left-color 0.15s ease, background 0.15s ease;
+    }
+    .card:hover {
+      border-left-color: var(--cyan);
+      background: #0e1c0e;
+    }
+
+    .card-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.4rem;
+      font-size: 0.74rem;
+      gap: 0.5rem;
+    }
+
+    .source {
+      color: var(--cyan);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .date {
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .title a {
+      display: block;
+      color: var(--green);
+      text-decoration: none;
+      font-size: 0.94rem;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+    .title a:hover {
+      color: var(--cyan);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .summary {
+      color: var(--text-dim);
+      font-size: 0.81rem;
+      margin-top: 0.45rem;
+      line-height: 1.55;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding-top: 1.5rem;
+      margin-top: 2rem;
+      color: var(--text-muted);
+      font-size: 0.71rem;
+      text-align: center;
+      line-height: 2;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 600px) {
+      body    { font-size: 13px; }
+      .logo   { font-size: 1.6rem; }
+      .container { padding: 1.5rem 1rem 2rem; }
+      .card-meta { flex-direction: column; align-items: flex-start; gap: 0.15rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <header>
+      <h1 class="logo">CYBERSEC_FEED<span class="cursor blink">█</span></h1>
+      <p class="tagline">&gt; Automated Threat Intelligence Digest</p>
+      <div class="header-meta">
+        <span>UPDATED: <strong>2026-05-11 22:40 AEST</strong></span>
+        <span class="sep">//</span>
+        <span>25 ARTICLES LOADED</span>
+        <span class="sep">//</span>
+        <span class="online">&#x25CF; ONLINE</span>
+      </div>
+    </header>
+
+    <div class="section-label">// LATEST INTEL ─────────────────────────────────────────────────────────</div>
+
+    <main>
+      
+      <article class="card">
+        <div class="card-meta">
+          <span class="source">[ BLEEPINGCOMPUTER ]</span>
+          <span class="date">2026-05-11 12:30 UTC</span>
+        </div>
+        <h2 class="title">
+          <a href="https://www.bleepingcomputer.com/news/security/webinar-this-week-prevention-alone-is-not-enough-against-modern-attacks/" target="_blank" rel="noopener noreferrer">Webinar this week: Prevention alone is not enough against modern attacks</a>
+        </h2>
+        
+        <p class="summary">&gt;&gt; This upcoming webinar explores how organizations need to combine security, backups, and recovery planning to reduce the impact of modern cyberattacks. [...]</p>
+        
+      </article>
+      
+      <article class="card">
+        <div class="card-meta">
+          <span class="source">[ DARK READING ]</span>
+          <span class="date">2026-05-11 12:00 UTC</span>
+        </div>
+        <h2 class="title">
+          <a href="https://www.darkreading.com/vulnerabilities-threats/cyber-espionage-group-aviation-firms-steal-map-data" target="_blank" rel="noopener noreferrer">Cyber Espionage Group Targets Aviation Firms to Steal Map Data</a>
+        </h2>
+        
+        <p class="summary">&gt;&gt; The campaign quietly compromises aerospace and drone operators to exfiltrate GIS files, terrain models, and GPS data and gain a clear picture of adversaries&#39; world view.</p>
+        
+      </article>
+      
+      <article class="card">
+        <div class="card-meta">
+          <span class="source">[ THE HACKER NEWS ]</span>
+          <span class="date">2026-05-11 11:30 UTC</span>
+        </div>
+        <h2 class="title">
+          <a href="https://thehackernews.com/2026/05/your-purple-team-isnt-purple-its-just.html" target="_blank" rel="noopener noreferrer">Your Purple Team Isn&#39;t Purple — It&#39;s Just Red and Blue in the Same Room</a>
+        </h2>
+        
+        <p class="summary">&gt;&gt; Defending a network at 2 am looks a lot like this: an analyst copy-pasting a hash from a PDF into a SIEM query. A red team script is being rewritten by hand so the blue team can use it. A patch waiting on a change-approval window that&#39;s longer than the exploitation window itself. Nobody in that chain is...</p>
+        
+      </article>
+      
+      <article class="card">
+        <div class="card-meta">
+          <span class="source">[ SCHNEIER ON SECURITY ]</span>
+          <span class="date">2026-05-11 11:04 UTC</span>
+        </div>
+        <h2 class="title">
+          <a href="https://www.schneier.com/blog/archives/2026/05/llms-and-text-in-text-steganography.html" target="_blank" rel="noopener noreferrer">LLMs and Text-in-Text Steganography</a>
+        </h2>
+        
+        <p class="summary">&gt;&gt; Turns out that LLMs are really good at hiding text messages in other text messages.</p>
+        
+      </article>
+      
+      <article class="card">
+        <div class="card-meta">
+          <span class="source">[ BLEEPINGCOMPUTER ]</span>
+          <span class="date">2026-05-11 09:03 UTC</span>
+        </div>
+        <h2 class="title">
+          <a href="https://www.bleepingcomputer.com/news/security/trickmo-android-banker-adopts-ton-blockchain-for-covert-comms/" target="_blank" rel="noopener noreferrer">TrickMo Android banker adopts TON blockchain for covert comms</a>
+        </h2>
+        
+        <p class="summary">&gt;&gt; A new variant of the TrickMo Android banking malware, delivered in campaigns targeting users across Europe, introduces new commands and uses The Open Network (TON) for stealthy command-and-control communications. [...]</p>
+        
+      </article>
+      
+      <article class="card">
+        <div class="card-meta">
+          <span class="source">[ THE HACKER NEWS ]</span>
+          <span class="date">2026-05-11 07:05 UTC</span>
+        </div>
+        <h2 class="title">
+          <a href="https://thehackernews.com/2026/05/fake-openai-privacy-filter-repo-hits-1.html" target="_blank" rel="noopener noreferrer">Fake OpenAI Privacy Filter Repo Hits #1 on Hugging Face, Draws 244K Downloads</a>
+        </h2>
+        
+        <p class="summary">&gt;&gt; A malicious Hugging Face repository managed to take a spot in the platform&#39;s trending list by impersonating OpenAI&#39;s Privacy Filter open-weight model to deliver a Rust-based information stealer to Windows users. The project, named Open-OSS/privacy-filter, masqueraded as its legitimate counterpart, released by...</p>
+        
+      </article>
+      
+      <article class="card">
+        <div class="card-meta">
+          <span class="source">[ SANS ISC ]</span>
+          <span class="date">2026-05-11 02:15 UTC</span>
+        </div>
+        <h2 class="title">
+          <a href="https://isc.sans.edu/diary/rss/32972" target="_blank" rel="noopener noreferrer">ISC Stormcast For Monday, May 11th, 2026 https://isc.sans.edu/podcastdetail/9926, (Mon, May 11th)</a>
+        </h2>
+        
+        <p class="summary">&gt;&gt; (c) SANS Internet Storm Center. https://isc.sans.edu Creative Commons Attribution-Noncommercial 3.0 United States License.</p>
+        
+      </article>
+      
+      <article class="card">
+        <div class="card-meta">
+          <span class="source">[ SANS ISC ]</span>
+          <span class="date">2026-05-10 22:37 UTC</span>
+        </div>
+        <h2 class="title">
+          <a href="https://isc.sans.edu/diary/rss/32970" target="_blank" rel="noopener noreferrer">YARA-X 1.16.0 Release, (Sun, May 10th)</a>
+        </h2>
+        
+        <p class="summary">&gt;&gt; YARA-X&amp;&amp;#x23&amp;#x3b;x26&amp;#x3b;&amp;#x23&amp;#x3b;39&amp;#x3b;s 1.16.0 release brings 4 improvements and 4 bugfixes. &amp;#xd;</p>
+        
+      </article>
+      
+      <article class="card">
+        <div class="card-meta">
+          <span class="source">[ BLEEPINGCOMPUTER ]</span>
+          <span class="date">2026-05-10 17:52 UTC</span>
+        </div>
+        <h2 class="title">
+          <a href="https://www.bleepingcomputer.com/news/security/hackers-abuse-google-ads-claudeai-chats-to-push-mac-malware/" target="_blank" rel="noopener noreferrer">Hackers abuse Google ads, Claude.ai chats to push Mac malware</a>
+        </h2>
+        
+        <p class="summary">&gt;&gt; Attackers are abusing Google Ads and legitimate Claude.ai shared chats in an active malvertising campaign. Users searching for &#34;Claude mac download&#34; may come across sponsored search results that list claude.ai as the target website, but lead to instructions that install malware on their Mac. [...]</p>
+        
+      </article>
+      
+      <article class="card">
+        <div class="card-meta">
+          <span class="source">[ BLEEPINGCOMPUTER ]</span>
+          <span class="date">2026-05-10 14:16 UTC</span>
+        </div>
+        <h2 class="title">
+          <a href="https://www.bleepingcomputer.com/news/security/police-shut-down-reboot-of-crimenetwork-marketplace-arrest-admin/" target="_blank" rel="noopener noreferrer">Police shut down reboot of Crimenetwork marketplace, arrest admin</a>
+        </h2>
+        
+        <p class="summary">&gt;&gt; German authorities have shut down a relaunch version of the criminal marketplace &#39;Crimenetwork&#39; that generated more than 3.6 million euros, and arrested its operator. [...]</p>
+        
+      </article>
+      
+      <article class="card">
+        <div class="card-meta">
+          <span class="source">[ THE HACKER NEWS ]</span>
+          <span class="date">2026-05-10 12:41 UTC</span>
+        </div>
+        <h2 class="title">
+          <a href="https://thehackernews.com/2026/05/ollama-out-of-bounds-read-vulnerability.html" target="_blank" rel="noopener noreferrer">Ollama Out-of-Bounds Read Vulnerability Allows Remote Process Memory Leak</a>
+        </h2>
+        
+        <p class="summary">&gt;&gt; Cybersecurity researchers have disclosed a critical security vulnerability in Ollama that, if successfully exploited, could allow a remote, unauthenticated attacker to leak its entire process memory. The out-of-bounds read flaw, which likely impacts over 300,000 servers globally, is tracked as CVE-2026-7482 (CVSS...</p>
+        
+      </article>
+      
+      <article class="card">
+        <div class="card-meta">
+          <span class="source">[ BLEEPINGCOMPUTER ]</span>
+          <span class="date">2026-05-09 19:27 UTC</span>
+        </div>
+        <h2 class="title">
+          <a href="https://www.bleepingcomputer.com/news/security/jdownloader-site-hacked-to-replace-installers-with-python-rat-malware/" target="_blank" rel="noopener noreferrer">JDownloader site hacked to replace installers with Python RAT malware</a>
+        </h2>
+        
+        <p class="summary">&gt;&gt; The website for the popular JDownloader download manager was compromised earlier this week to distribute malicious Windows and Linux installers, with the Windows payload found deploying a Python-based remote access trojan. [...]</p>
+        
+      </article>
+      
+      <article class="card">
+        <div class="card-meta">
+          <span class="source">[ BLEEPINGCOMPUTER ]</span>
+          <span class="date">2026-05-09 14:26 UTC</span>
+        </div>
+        <h2 class="title">
+          <a href="https://www.bleepingcomputer.com/news/security/fake-openai-repository-on-hugging-face-pushes-infostealer-malware/" target="_blank" rel="noopener noreferrer">Fake OpenAI repository on Hugging Face pushes infostealer malware</a>
+        </h2>
+        
+        <p class="summary">&gt;&gt; A malicious Hugging Face repository that reached the platform&#39;s trending list impersonated OpenAI&#39;s &#34;Privacy Filter&#34; project to deliver information-stealing malware to Windows users. [...]</p>
+        
+      </article>
+      
+      <article class="card">
+        <div class="card-meta">
+          <span class="source">[ THE HACKER NEWS ]</span>
+          <span class="date">2026-05-09 07:16 UTC</span>
+        </div>
+        <h2 class="title">
+          <a href="https://thehackernews.com/2026/05/cpanel-whm-patch-3-new-vulnerabilities.html" target="_blank" rel="noopener noreferrer">cPanel, WHM Release Fixes for Three New Vulnerabilities — Patch Now</a>
+        </h2>
+        
+        <p class="summary">&gt;&gt; cPanel has released updates to address three vulnerabilities in cPanel and Web Host Manager (WHM) that could be exploited to achieve privilege escalation, code execution, and denial-of-service. The list of vulnerabilities is as follows - CVE-2026-29201 (CVSS score: 4.3) - An insufficient input validation of the...</p>
+        
+      </article>
+      
+      <article class="card">
+        <div class="card-meta">
+          <span class="source">[ SCHNEIER ON SECURITY ]</span>
+          <span class="date">2026-05-08 21:03 UTC</span>
+        </div>
+        <h2 class="title">
+          <a href="https://www.schneier.com/blog/archives/2026/05/friday-squid-blogging-giant-squid-live-in-the-waters-of-western-australia.html" target="_blank" rel="noopener noreferrer">Friday Squid Blogging: Giant Squid Live in the Waters of Western Australia</a>
+        </h2>
+        
+        <p class="summary">&gt;&gt; Evidence of them has been found by analyzing DNA in the seawater. As usual, you can also use this squid post to talk about the security stories in the news that I haven&amp;#8217;t covered. Blog moderation policy.</p>
+        
+      </article>
+      
+      <article class="card">
+        <div class="card-meta">
+          <span class="source">[ DARK READING ]</span>
+          <span class="date">2026-05-08 20:08 UTC</span>
+        </div>
+        <h2 class="title">
+          <a href="https://www.darkreading.com/cyberattacks-data-breaches/shinyhunters-second-attack-instructure" target="_blank" rel="noopener noreferrer">ShinyHunters Claims Second Attack Against Instructure</a>
+        </h2>
+        
+        <p class="summary">&gt;&gt; The edtech company is struggling to wrest control from its hackers. PII belonging to hundreds of millions of people is on the line.</p>
+        
+      </article>
+      
+      <article class="card">
+        <div class="card-meta">
+          <span class="source">[ THE HACKER NEWS ]</span>
+          <span class="date">2026-05-08 18:12 UTC</span>
+        </div>
+        <h2 class="title">
+          <a href="https://thehackernews.com/2026/05/tclbanker-banking-trojan-targets.html" target="_blank" rel="noopener noreferrer">TCLBANKER Banking Trojan Targets Financial Platforms via WhatsApp and Outlook Worms</a>
+        </h2>
+        
+        <p class="summary">&gt;&gt; Threat hunters have flagged a previously undocumented Brazilian banking trojan dubbed TCLBANKER that&#39;s capable of targeting 59 banking, fintech, and cryptocurrency platforms. The activity is being tracked by Elastic Security Labs under the moniker REF3076. The malware family is assessed to be a major update of the...</p>
+        
+      </article>
+      
+      <article class="card">
+        <div class="card-meta">
+          <span class="source">[ SCHNEIER ON SECURITY ]</span>
+          <span class="date">2026-05-08 17:49 UTC</span>
+        </div>
+        <h2 class="title">
+          <a href="https://www.schneier.com/blog/archives/2026/05/insider-betting-on-polymarket.html" target="_blank" rel="noopener noreferrer">Insider Betting on Polymarket</a>
+        </h2>
+        
+        <p class="summary">&gt;&gt; Insider trading is rife on Polymarket: Analysis by the Anti-Corruption Data Collective, a non-profit research and advocacy group, found that long-shot bets&amp;#8212;­defined as wagers of $2,500 or more at odds of 35 percent or less&amp;#8212;­on the platform had an average win rate of around 52 percent in markets on...</p>
+        
+      </article>
+      
+      <article class="card">
+        <div class="card-meta">
+          <span class="source">[ BLEEPINGCOMPUTER ]</span>
+          <span class="date">2026-05-08 16:18 UTC</span>
+        </div>
+        <h2 class="title">
+          <a href="https://www.bleepingcomputer.com/news/security/nvidia-confirms-geforce-now-data-breach-affecting-armenian-users/" target="_blank" rel="noopener noreferrer">NVIDIA confirms GeForce NOW data breach affecting Armenian users</a>
+        </h2>
+        
+        <p class="summary">&gt;&gt; NVIDIA has confirmed in a statement for BleepingComputer that GeForce NOW user information has been exposed in a data breach. [...]</p>
+        
+      </article>
+      
+      <article class="card">
+        <div class="card-meta">
+          <span class="source">[ THE HACKER NEWS ]</span>
+          <span class="date">2026-05-08 15:08 UTC</span>
+        </div>
+        <h2 class="title">
+          <a href="https://thehackernews.com/2026/05/fake-call-history-apps-stole-payments.html" target="_blank" rel="noopener noreferrer">Fake Call History Apps Stole Payments From Users After 7.3 Million Play Store Downloads</a>
+        </h2>
+        
+        <p class="summary">&gt;&gt; Cybersecurity researchers have discovered fraudulent apps on the official Google Play Store for Android that falsely claimed to offer access to call histories for any phone number, only to trick users into joining a subscription that provided fake data and incurred financial loss. The 28 apps have collectively...</p>
+        
+      </article>
+      
+      <article class="card">
+        <div class="card-meta">
+          <span class="source">[ SANS ISC ]</span>
+          <span class="date">2026-05-08 14:57 UTC</span>
+        </div>
+        <h2 class="title">
+          <a href="https://isc.sans.edu/diary/rss/32968" target="_blank" rel="noopener noreferrer">Another Universal Linux Local Privilege Escalation (LPE) Vulnerability: Dirty Frag, (Fri, May 8th)</a>
+        </h2>
+        
+        <p class="summary">&gt;&gt; Less than two weeks after the public disclosure of the Copy Fail vulnerability (CVE-2026-31431), another local privilege escalation (LPE) vulnerability in the Linux kernel has been revealed. Referred to as &#34;Dirty Frag,&#34; this vulnerability was discovered and reported by Hyunwoo Kim (&amp;#x40;v4bel) &amp;#x5b;1&amp;#x5d;. In...</p>
+        
+      </article>
+      
+      <article class="card">
+        <div class="card-meta">
+          <span class="source">[ BLEEPINGCOMPUTER ]</span>
+          <span class="date">2026-05-08 14:02 UTC</span>
+        </div>
+        <h2 class="title">
+          <a href="https://www.bleepingcomputer.com/news/security/why-more-analysts-wont-solve-your-socs-alert-problem/" target="_blank" rel="noopener noreferrer">Why More Analysts Won’t Solve Your SOC’s Alert Problem</a>
+        </h2>
+        
+        <p class="summary">&gt;&gt; Attackers move faster than overwhelmed SOC teams can realistically investigate alerts. Prophet Security breaks down how AI can help analysts investigate alerts faster and focus on real threats. [...]</p>
+        
+      </article>
+      
+      <article class="card">
+        <div class="card-meta">
+          <span class="source">[ THE HACKER NEWS ]</span>
+          <span class="date">2026-05-08 14:01 UTC</span>
+        </div>
+        <h2 class="title">
+          <a href="https://thehackernews.com/2026/05/one-click-total-shutdown-patient-zero.html" target="_blank" rel="noopener noreferrer">One Click, Total Shutdown: The &#34;Patient Zero&#34; Webinar on Killing Stealth Breaches</a>
+        </h2>
+        
+        <p class="summary">&gt;&gt; The hardest part of cybersecurity isn&#39;t the technology, it’s the people. Every major breach you’ve read about lately usually starts the same way: one employee, one clever email, and one &#34;Patient Zero&#34; infection. In 2026, hackers are using AI to make these &#34;first clicks&#34; nearly impossible to spot. If a single laptop...</p>
+        
+      </article>
+      
+      <article class="card">
+        <div class="card-meta">
+          <span class="source">[ BLEEPINGCOMPUTER ]</span>
+          <span class="date">2026-05-08 13:23 UTC</span>
+        </div>
+        <h2 class="title">
+          <a href="https://www.bleepingcomputer.com/news/security/trellix-source-code-breach-claimed-by-ransomhouse-hackers/" target="_blank" rel="noopener noreferrer">Trellix source code breach claimed by RansomHouse hackers</a>
+        </h2>
+        
+        <p class="summary">&gt;&gt; The attack on the Trellix source code repository disclosed last week has been claimed by the RansomHouse threat group, which leaked a small set of images as proof of the intrusion. [...]</p>
+        
+      </article>
+      
+      <article class="card">
+        <div class="card-meta">
+          <span class="source">[ BLEEPINGCOMPUTER ]</span>
+          <span class="date">2026-05-08 12:16 UTC</span>
+        </div>
+        <h2 class="title">
+          <a href="https://www.bleepingcomputer.com/news/security/cisa-gives-feds-four-days-to-patch-ivanti-flaw-exploited-as-zero-day/" target="_blank" rel="noopener noreferrer">CISA gives feds four days to patch Ivanti flaw exploited as zero-day</a>
+        </h2>
+        
+        <p class="summary">&gt;&gt; CISA has given U.S. federal agencies four days to secure their networks against a high-severity vulnerability in Ivanti Endpoint Manager Mobile (EPMM) exploited in zero-day attacks. [...]</p>
+        
+      </article>
+      
+    </main>
+
+    <footer>
+      <p>// SOURCES: THE HACKER NEWS &middot; KREBS ON SECURITY &middot; BLEEPINGCOMPUTER &middot; SANS ISC &middot; SCHNEIER &middot; DARK READING</p>
+      <p>// AUTO-UPDATED DAILY AT 07:00 AEST &middot; CYBERSEC_FEED v1.0</p>
+    </footer>
+
+  </div>
+</body>
+</html>
